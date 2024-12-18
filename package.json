@@ -1,0 +1,14 @@
+{
+  "name": "jwt-gen",
+  "version": "1.0.0",
+  "description": "Generate tokens for testing. Usage: npm run gen [expiration_minutes]",
+  "main": "gen.js",
+  "scripts": {
+    "gen": "node gen.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2"
+  }
+}
