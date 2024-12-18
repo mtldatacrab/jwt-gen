@@ -36,7 +36,6 @@ try {
   const now = Math.floor(Date.now() / 1000);
   const token = jwt.sign(
     {
-      sub: "iform-client",
       iat: now,
       exp: now + expirationMinutes * 60, // Convert minutes to seconds
     },
