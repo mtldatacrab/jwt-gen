@@ -44,6 +44,12 @@ try {
   );
 
   console.log(token);
+
+  // Copy token to clipboard
+  require("child_process").spawn("pbcopy").stdin.write(token);
+  console.log("\nToken copied to clipboard!");
+
+  process.exit(0);
 } catch (error) {
   console.error("Error generating JWT token:", error.message);
   process.exit(1);
