@@ -1,30 +1,51 @@
 const jwt = require("jsonwebtoken");
 const env = require("./env");
 
+/**
+ * JWT token generator
+ * Generates a JWT token signed with RS256 algorithm
+ *
+ * Usage: node gen.js [expiration_minutes]
+ * expiration_minutes: Optional. Number of minutes until token expires (default: 60)
+ */
+
 const PRIVATE_KEY = env.PRIVATE_KEY;
 
+// Validate private key exists
 if (!PRIVATE_KEY) {
-  console.error("PRIVATE_KEY is not set");
+  console.error("Error: PRIVATE_KEY is not set in env.js");
   process.exit(1);
 }
 
-// Get expiration time from command line argument, default to 60 minutes (1 hour)
-const expirationMinutes = parseInt(process.argv[2]) || 60;
+// Parse and validate command line arguments
+const expirationMinutes = (() => {
+  const input = process.argv[2];
+  if (!input) return 60; // Default to 60 minutes
 
-// Validate expiration time
-if (isNaN(expirationMinutes) || expirationMinutes <= 0) {
-  console.error("Expiration time must be a positive number of minutes");
+  const minutes = parseInt(input);
+  if (isNaN(minutes) || minutes <= 0) {
+    console.error(
+      "Error: Expiration time must be a positive number of minutes"
+    );
+    process.exit(1);
+  }
+  return minutes;
+})();
+
+try {
+  const now = Math.floor(Date.now() / 1000);
+  const token = jwt.sign(
+    {
+      sub: "iform-client",
+      iat: now,
+      exp: now + expirationMinutes * 60, // Convert minutes to seconds
+    },
+    PRIVATE_KEY,
+    { algorithm: "RS256" }
+  );
+
+  console.log(token);
+} catch (error) {
+  console.error("Error generating JWT token:", error.message);
   process.exit(1);
 }
-
-const token = jwt.sign(
-  {
-    sub: "iform-client",
-    iat: Math.floor(Date.now() / 1000),
-    exp: Math.floor(Date.now() / 1000) + (expirationMinutes * 60), // Convert minutes to seconds
-  },
-  PRIVATE_KEY,
-  { algorithm: "RS256" }
-);
-
-console.log(token);
